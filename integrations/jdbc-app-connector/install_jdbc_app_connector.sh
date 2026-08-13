@@ -41,6 +41,12 @@ _slugify() {
     echo "${value}"
 }
 
+_pathify() {
+    local value="$1"
+    value="${value// /-}"
+    echo "${value}"
+}
+
 _prompt() {
     local var_name=$1
     local prompt_text=$2
@@ -237,11 +243,13 @@ if [[ "${NON_INTERACTIVE}" == "true" ]]; then
     APPLICATION_NAME="${APPLICATION_NAME:-}"
     _require_var "APPLICATION_NAME" "${APPLICATION_NAME}"
 else
-    _prompt APPLICATION_NAME "Application Name (used for /opt/VEZA/JDBC/<Application Name>)" "${APPLICATION_NAME:-JDBC Application}"
+    _prompt APPLICATION_NAME "Application Name (spaces are converted to dashes in folder path)" "${APPLICATION_NAME:-JDBC Application}"
 fi
 
+APPLICATION_DIR_NAME=$(_pathify "${APPLICATION_NAME}")
+
 if [[ -z "${INSTALL_DIR}" ]]; then
-    INSTALL_DIR="${DEFAULT_BASE_DIR}/${APPLICATION_NAME}"
+    INSTALL_DIR="${DEFAULT_BASE_DIR}/${APPLICATION_DIR_NAME}"
 fi
 
 SCRIPTS_DIR="${INSTALL_DIR}/scripts"
@@ -252,6 +260,7 @@ DEFAULT_DATASOURCE_NAME="${APPLICATION_NAME}"
 DEFAULT_PROVIDER_NAME="JDBC Applications"
 APP_SLUG=$(_slugify "${APPLICATION_NAME}")
 _ok "Install directory: ${INSTALL_DIR}"
+_ok "Application folder name: ${APPLICATION_DIR_NAME}"
 _ok "Shared JDBC drivers directory: ${DRIVERS_DIR}"
 
 _milestone 5 "Cloning integration files"

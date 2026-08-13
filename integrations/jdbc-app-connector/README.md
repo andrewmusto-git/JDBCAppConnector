@@ -58,6 +58,7 @@ graph LR
 - Network connectivity to DB host and Veza
 - Veza API key with provider push permissions
 - Shared JDBC driver cache path: /opt/VEZA/JDBC/drivers
+- Installer folder naming rule: spaces in Application Name are converted to dashes for the install directory
 
 ## 5. Quick Start
 ```bash
@@ -127,23 +128,23 @@ sudo useradd -r -s /bin/bash -m -d /opt/jdbc-app-connector-veza jdbc-app-connect
 ```
 - Permissions:
 ```bash
-chmod 600 "/opt/VEZA/JDBC/<Application Name>/scripts/.env"
-chmod 700 "/opt/VEZA/JDBC/<Application Name>/scripts"
+chmod 600 "/opt/VEZA/JDBC/<Application-Name>/scripts/.env"
+chmod 700 "/opt/VEZA/JDBC/<Application-Name>/scripts"
 ```
 - SELinux (RHEL):
 ```bash
 getenforce
-sudo restorecon -Rv "/opt/VEZA/JDBC/<Application Name>"
+sudo restorecon -Rv "/opt/VEZA/JDBC/<Application-Name>"
 ```
 - Cron wrapper example:
 ```bash
 #!/usr/bin/env bash
-cd "/opt/VEZA/JDBC/<Application Name>/scripts"
-"/opt/VEZA/JDBC/<Application Name>/scripts/venv/bin/python3" jdbc_app_connector.py --env-file .env >> ../logs/cron.log 2>&1
+cd "/opt/VEZA/JDBC/<Application-Name>/scripts"
+"/opt/VEZA/JDBC/<Application-Name>/scripts/venv/bin/python3" jdbc_app_connector.py --env-file .env >> ../logs/cron.log 2>&1
 ```
 - Cron schedule:
 ```bash
-0 2 * * * /opt/VEZA/JDBC/<Application Name>/scripts/run_connector.sh
+0 2 * * * /opt/VEZA/JDBC/<Application-Name>/scripts/run_connector.sh
 ```
 
 ## 9. Multiple Instances
