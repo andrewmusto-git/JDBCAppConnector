@@ -321,6 +321,7 @@ else
     _prompt_secret VEZA_API_KEY "Veza API key"
 
     _prompt DB_SERVER "Database hostname or IP" "${DB_SERVER:-}"
+    _prompt DB_PORT "Database port (optional)" "${DB_PORT:-}"
     _prompt DB_INSTANCE "Database named instance (blank if none)" "${DB_INSTANCE:-}"
     _prompt DB_NAME "Database name" "${DB_NAME:-}"
     _prompt DB_USER "Database username" "${DB_USER:-}"
@@ -362,6 +363,7 @@ VEZA_URL=${VEZA_URL}
 VEZA_API_KEY=${VEZA_API_KEY}
 
 DB_SERVER=${DB_SERVER}
+DB_PORT=${DB_PORT}
 DB_INSTANCE=${DB_INSTANCE}
 DB_NAME=${DB_NAME}
 DB_USER=${DB_USER}

@@ -98,6 +98,7 @@ chmod 600 .env
 | --save-json | No | flag | false | Save payload.json |
 | --log-level | No | DEBUG/INFO/WARNING/ERROR | INFO | Logging level |
 | --db-server | No** | hostname | env | SQL Server host |
+| --db-port | No | integer | env | Database port |
 | --db-instance | No | string | env | SQL Server instance |
 | --db-name | No | string | env | Database name |
 | --db-user | Yes | string | env | DB login user |

@@ -88,6 +88,7 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument("--db-server", help="Database host (overrides DB_SERVER env var)")
+    parser.add_argument("--db-port", help="Database port (overrides DB_PORT env var)")
     parser.add_argument("--db-instance", help="Named DB instance (overrides DB_INSTANCE env var)")
     parser.add_argument("--db-name", help="Database name (overrides DB_NAME env var)")
     parser.add_argument("--db-user", help="Database login username (overrides DB_USER env var)")
@@ -124,6 +125,7 @@ def load_config(args: argparse.Namespace) -> dict[str, Any]:
         "veza_url": args.veza_url or os.getenv("VEZA_URL"),
         "veza_api_key": args.veza_api_key or os.getenv("VEZA_API_KEY"),
         "db_server": args.db_server or os.getenv("DB_SERVER"),
+        "db_port": args.db_port or os.getenv("DB_PORT", ""),
         "db_instance": args.db_instance or os.getenv("DB_INSTANCE", ""),
         "db_name": args.db_name or os.getenv("DB_NAME"),
         "db_user": args.db_user or os.getenv("DB_USER"),
@@ -210,9 +212,13 @@ def _build_jdbc_url(config: dict[str, Any]) -> str:
         return config["db_jdbc_url"]
 
     server = config["db_server"]
+    port = config["db_port"]
     instance = config["db_instance"]
     db_name = config["db_name"]
-    url = f"jdbc:sqlserver://{server}"
+    host_port = server
+    if port:
+        host_port = f"{server}:{port}"
+    url = f"jdbc:sqlserver://{host_port}"
     if instance:
         url += f";instanceName={instance}"
     if db_name:
