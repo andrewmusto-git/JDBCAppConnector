@@ -322,6 +322,27 @@ def _perm_actions(permission_name: str) -> list[OAAPermission]:
     return unique
 
 
+def _assign_permissions(target: Any, permissions: list[str], target_label: str) -> None:
+    """Assign permissions using whichever method exists in the installed oaaclient version."""
+    if not permissions:
+        return
+
+    if hasattr(target, "add_permissions"):
+        target.add_permissions(permissions)
+        return
+
+    if hasattr(target, "add_permission"):
+        for permission in permissions:
+            target.add_permission(permission)
+        return
+
+    log.warning(
+        "Permission assignment method unavailable for %s; skipped %d permission(s)",
+        target_label,
+        len(permissions),
+    )
+
+
 def build_oaa_payload(config: dict[str, Any], query_data: dict[str, list[dict[str, Any]]]) -> tuple[CustomApplication, dict[str, int]]:
     app = CustomApplication(
         name=config["datasource_name"],
@@ -441,15 +462,16 @@ def build_oaa_payload(config: dict[str, Any], query_data: dict[str, list[dict[st
             if group_name:
                 local_user.add_group(group_name)
 
-        for perm_name in sorted(user_permissions.get(user_id, set())):
-            local_user.add_permissions([perm_name])
+        user_permission_list = sorted(user_permissions.get(user_id, set()))
+        _assign_permissions(local_user, user_permission_list, f"user:{user_id}")
 
         users_added += 1
 
     for role_id, permissions in role_permissions.items():
         role_obj = local_roles.get(role_id)
         if role_obj:
-            role_obj.add_permissions(sorted(permissions))
+            role_permission_list = sorted(permissions)
+            _assign_permissions(role_obj, role_permission_list, f"role:{role_id}")
 
     stats = {
         "users": users_added,
