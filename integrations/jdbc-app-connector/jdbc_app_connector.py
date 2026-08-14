@@ -328,12 +328,18 @@ def _assign_permissions(target: Any, permissions: list[str], target_label: str) 
         return
 
     if hasattr(target, "add_permissions"):
-        target.add_permissions(permissions)
+        try:
+            target.add_permissions(permissions, apply_to_application=True)
+        except TypeError:
+            target.add_permissions(permissions)
         return
 
     if hasattr(target, "add_permission"):
         for permission in permissions:
-            target.add_permission(permission)
+            try:
+                target.add_permission(permission, apply_to_application=True)
+            except TypeError:
+                target.add_permission(permission)
         return
 
     log.warning(
