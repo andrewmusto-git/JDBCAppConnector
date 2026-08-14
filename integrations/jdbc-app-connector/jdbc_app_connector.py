@@ -33,6 +33,7 @@ def _default_driver_jar(driver_type: str) -> str:
         "postgresql": "postgresql-42.7.4.jar",
         "mysql": "mysql-connector-j-8.4.0.jar",
         "oracle": "ojdbc11-23.4.0.24.05.jar",
+        "as400": "jt400-21.0.0.jar",
     }
     return os.path.join(DEFAULT_DRIVER_DIR, mapping.get(normalized, mapping["mssql"]))
 
@@ -101,8 +102,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--db-jdbc-driver-type",
-        choices=["mssql", "postgresql", "mysql", "oracle"],
-        help="JDBC driver type (overrides DB_JDBC_DRIVER_TYPE env var)",
+        choices=["mssql", "postgresql", "mysql", "oracle", "as400"],
+        help="JDBC driver type (overrides DB_JDBC_DRIVER_TYPE env var). Use 'as400' for IBM iSeries/AS400 (jt400 driver — must be manually placed; not available on Maven Central).",
     )
     parser.add_argument("--db-jdbc-jar", help="Path to JDBC jar (overrides DB_JDBC_JAR env var)")
 

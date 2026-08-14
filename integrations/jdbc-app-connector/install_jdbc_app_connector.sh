@@ -131,8 +131,15 @@ _resolve_driver_metadata() {
             JDBC_URL="https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc11/23.4.0.24.05/ojdbc11-23.4.0.24.05.jar"
             JDBC_CLASS_CHECK="oracle/jdbc/OracleDriver.class"
             ;;
+        as400)
+            JDBC_DRIVER_CLASS_DEFAULT="com.ibm.as400.access.AS400JDBCDriver"
+            JDBC_JAR_FILE="jt400-21.0.0.jar"
+            JDBC_COMPAT_GLOB="jt400*.jar"
+            JDBC_URL="https://repo1.maven.org/maven2/net/sf/jt400/jt400/21.0.0/jt400-21.0.0.jar"
+            JDBC_CLASS_CHECK="com/ibm/as400/access/AS400JDBCDriver.class"
+            ;;
         *)
-            _die "Unsupported DB_JDBC_DRIVER_TYPE '${type}'. Use mssql, postgresql, mysql, or oracle."
+            _die "Unsupported DB_JDBC_DRIVER_TYPE '${type}'. Use mssql, postgresql, mysql, oracle, or as400."
             ;;
     esac
 }
@@ -284,7 +291,7 @@ _milestone 7 "Selecting, installing, and validating JDBC driver"
 if [[ "${NON_INTERACTIVE}" == "true" ]]; then
     DB_JDBC_DRIVER_TYPE="${DB_JDBC_DRIVER_TYPE:-mssql}"
 else
-    _prompt DB_JDBC_DRIVER_TYPE "JDBC driver type (mssql|postgresql|mysql|oracle)" "${DB_JDBC_DRIVER_TYPE:-mssql}"
+    _prompt DB_JDBC_DRIVER_TYPE "JDBC driver type (mssql|postgresql|mysql|oracle|as400)" "${DB_JDBC_DRIVER_TYPE:-mssql}"
 fi
 
 _resolve_driver_metadata "${DB_JDBC_DRIVER_TYPE}"
