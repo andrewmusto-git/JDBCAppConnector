@@ -444,10 +444,16 @@ def build_oaa_payload(config: dict[str, Any], query_data: dict[str, list[dict[st
         app.add_local_group(group_name)
 
     users_added = 0
+    seen_user_ids: set[str] = set()
     for row in users_raw:
         user_id = _get_value(row, cols["users_col_id"])
         if not user_id:
             continue
+
+        user_key = user_id.lower()
+        if user_key in seen_user_ids:
+            continue
+        seen_user_ids.add(user_key)
 
         user_name = _get_value(row, cols["users_col_full_name"])
         email = _get_value(row, cols["users_col_email"])
