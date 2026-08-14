@@ -103,7 +103,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--db-jdbc-driver-type",
         choices=["mssql", "postgresql", "mysql", "oracle", "as400"],
-        help="JDBC driver type (overrides DB_JDBC_DRIVER_TYPE env var). Use 'as400' for IBM iSeries/AS400 (jt400 driver — must be manually placed; not available on Maven Central).",
+        help="JDBC driver type (overrides DB_JDBC_DRIVER_TYPE env var). Use 'as400' for IBM iSeries/AS400 with JTOpen (jt400).",
     )
     parser.add_argument("--db-jdbc-jar", help="Path to JDBC jar (overrides DB_JDBC_JAR env var)")
 
@@ -212,13 +212,47 @@ def _build_jdbc_url(config: dict[str, Any]) -> str:
     if config["db_jdbc_url"]:
         return config["db_jdbc_url"]
 
+    driver_type = str(config.get("db_jdbc_driver_type", "mssql")).strip().lower()
     server = config["db_server"]
     port = config["db_port"]
     instance = config["db_instance"]
     db_name = config["db_name"]
+
     host_port = server
     if port:
         host_port = f"{server}:{port}"
+
+    if driver_type == "mssql":
+        url = f"jdbc:sqlserver://{host_port}"
+        if instance:
+            url += f";instanceName={instance}"
+        if db_name:
+            url += f";databaseName={db_name}"
+        url += ";encrypt=true;trustServerCertificate=true"
+        return url
+
+    if driver_type == "postgresql":
+        if db_name:
+            return f"jdbc:postgresql://{host_port}/{db_name}"
+        return f"jdbc:postgresql://{host_port}"
+
+    if driver_type == "mysql":
+        if db_name:
+            return f"jdbc:mysql://{host_port}/{db_name}"
+        return f"jdbc:mysql://{host_port}"
+
+    if driver_type == "oracle":
+        if db_name:
+            return f"jdbc:oracle:thin:@//{host_port}/{db_name}"
+        return f"jdbc:oracle:thin:@{host_port}"
+
+    if driver_type == "as400":
+        # Use SQL naming by default so schemas/libraries can be referenced as LIBRARY.TABLE.
+        if db_name:
+            return f"jdbc:as400://{host_port}/{db_name};naming=sql;errors=full"
+        return f"jdbc:as400://{host_port};naming=sql;errors=full"
+
+    log.warning("Unknown DB_JDBC_DRIVER_TYPE '%s'; defaulting JDBC URL builder to SQL Server", driver_type)
     url = f"jdbc:sqlserver://{host_port}"
     if instance:
         url += f";instanceName={instance}"

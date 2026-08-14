@@ -344,7 +344,7 @@ else
     _prompt_secret DB_PASSWORD "Database password"
     _prompt DB_DOMAIN "AD domain for NTLM (blank to omit)" "${DB_DOMAIN:-}"
 
-    _prompt DB_JDBC_URL "Full JDBC URL (blank to auto-build SQL Server URL)" "${DB_JDBC_URL:-}"
+    _prompt DB_JDBC_URL "Full JDBC URL (blank to auto-build from driver type)" "${DB_JDBC_URL:-}"
     _prompt DB_JDBC_DRIVER_CLASS "JDBC driver class" "${DB_JDBC_DRIVER_CLASS:-${JDBC_DRIVER_CLASS_DEFAULT}}"
     _prompt DB_JDBC_JAR "JDBC jar path" "${DB_JDBC_JAR:-${JDBC_JAR_PATH}}"
 
